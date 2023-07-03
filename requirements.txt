@@ -1,0 +1,9 @@
+flask
+openai
+gunicorn
+langchain
+chromadb
+tiktoken
+nest_asyncio
+bs4
+pinecone-client
