@@ -49,7 +49,7 @@ global qa
 qa = ConversationalRetrievalChain.from_llm(
     ChatOpenAI(
         temperature=0, 
-        model="gpt-4", 
+        model="gpt-3.5-turbo-16k", 
         openai_api_key=openai_api_key), 
         vectorstore.as_retriever(),
         memory=memory,
