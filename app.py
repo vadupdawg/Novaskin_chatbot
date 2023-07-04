@@ -52,7 +52,6 @@ qa = ConversationalRetrievalChain.from_llm(
         model="gpt-4", 
         openai_api_key=openai_api_key), 
         vectorstore.as_retriever(),
-        condense_question_llm = ChatOpenAI(temperature=0, model='gpt-4', openai_api_key=openai_api_key, verbose=True), 
         memory=memory,
         verbose=True)
 
