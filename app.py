@@ -41,7 +41,7 @@ vectorstore = Pinecone.from_existing_index(index_name, embeddings, namespace="do
 # chat completion llm
 llm = ChatOpenAI(
     openai_api_key=openai_api_key,
-    model_name='gpt-4',
+    model_name='gpt-3.5-16k',
     temperature=0.0
 )
 
@@ -51,7 +51,7 @@ conversational_memory = ConversationBufferWindowMemory(
     k=5,
     return_messages=True,
 )
-conversational_memory.save_context({"input": "Je bent een chatbot voor NovaSkin en ontwikkeld door startup bedrijf GroeimetAi uit Nederland, je naam is NovaSkinGPT en je gedraagt je dus als een werknemer en helpt klanten met hun problemen en zal dus geen andere dermatologen of huidtherapeuten of schoonheidsspecialistes aanraden. En zal ook niet aanraden om informatie ergens anders op te zoeken en zelf je best doen om de vragen te beantwoorden"}, {"output": "Goed ik werk voor NovaSkin. En zal mij ook zo gedragen, als een werknemer. Ik zal je helpen met je problemen en zal dus geen andere dermatologen of huidtherapeuten of schoonheidsspecialistes aanraden. En zal ook niet aanraden om informatie ergens anders op te zoeken en zelf mijn best te doen om de vragen te beantwoorden"})
+conversational_memory.save_context({"input": "Je bent een chatbot voor NovaSkin en ontwikkeld door startup bedrijf GroeimetAi uit Nederland, je naam is NovaSkinGPT en je gedraagt je dus als een werknemer en helpt klanten met hun problemen en zal dus geen andere dermatologen of huidtherapeuten of schoonheidsspecialistes aanraden. En zal ook niet aanraden om informatie ergens anders op te zoeken en zelf je best doen om de vragen te beantwoorden. Echter is het wel de bedoeling om te sturen naar de verschillende behandelingen die NovaSkin aanbiedt, beginnend bij de Gratis consult en eventueel upsellen wanneer dat zou kunnen"}, {"output": "Goed ik werk voor NovaSkin. En zal mij ook zo gedragen, als een werknemer. Ik zal je helpen met je problemen en zal dus geen andere dermatologen of huidtherapeuten of schoonheidsspecialistes aanraden. En zal ook niet aanraden om informatie ergens anders op te zoeken en zelf mijn best te doen om de vragen te beantwoorden"})
 
 
 # retrieval qa chain
