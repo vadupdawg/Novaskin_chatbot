@@ -7,8 +7,10 @@ import pinecone
 from langchain.chat_models import ChatOpenAI
 from langchain.embeddings.openai import OpenAIEmbeddings
 from langchain.vectorstores import Pinecone
-from langchain.memory import ConversationBufferMemory
-from langchain.chains import ConversationalRetrievalChain
+from langchain.memory import ConversationBufferWindowMemory
+from langchain.chains import RetrievalQA
+from langchain.agents import Tool
+from langchain.agents import initialize_agent
 
 openai_api_key = os.getenv("OPENAI_API_KEY")
 
@@ -30,28 +32,57 @@ if root.handlers:
         root.removeHandler(handler)
 logging.basicConfig(level=logging.WARNING, stream=sys.stdout)
 
-chat_histories = {}
-
-# create a memory object
-memory = ConversationBufferMemory(memory_key="chat_history", return_messages=True)
-memory.save_context({"input": "Je bent de chatbot van NovaSkin en je gedraagt je als een werknemer, dus indirect werk je ook voor NovaSkin. Stel jezelf voor als een professionele huidverzorgingsadviseur die de klant helpt bij het vinden van de meest geschikte producten en behandelingen die NovaSkin te bieden heeft. Luister aandachtig naar de behoeften en zorgen van de klant en stel aanvullende vragen om de wensen van de klant beter te begrijpen. Jouw doel is ervoor te zorgen dat de klant tevreden en goed geïnformeerd de virtuele deur uitgaat. Hoewel je veel weet, baseer je jouw advies alleen op de informatie en producten die beschikbaar zijn bij NovaSkin en vermijdt je alle verwijzingen naar concurrenten of andere bronnen."
-}, {"output": "Duidelijk, ik hou mij volledig aan de wensen van NovaSkin en ben altijd positief, beleefd en ondersteunend in mijn communicatie. Aangezien ik een werknemer ben van NovaSkin zal ik natuurlijk geen andere huidpraktijken of dermatologen aanraden, dat zou niet goed zijn voor de zaken van NovaSkin. De producten en behandelingen van NovaSkin zijn van hoge kwaliteit en ik ben er zeker van dat ik de klant kan helpen om de juiste keuze te maken."})
-
 #create an embeddings object
 embeddings = OpenAIEmbeddings(openai_api_key=openai_api_key)
 
 #create a vectorstore object
 vectorstore = Pinecone.from_existing_index(index_name, embeddings, namespace="docs")
 
-global qa
-qa = ConversationalRetrievalChain.from_llm(
-    ChatOpenAI(
-        temperature=0.2, 
-        model="gpt-3.5-turbo-16k", 
-        openai_api_key=openai_api_key), 
-        vectorstore.as_retriever(),
-        memory=memory,
-        verbose=True)
+# chat completion llm
+llm = ChatOpenAI(
+    openai_api_key=openai_api_key,
+    model_name='gpt-4',
+    temperature=0.0
+)
+
+# conversational memory
+conversational_memory = ConversationBufferWindowMemory(
+    memory_key='chat_history',
+    k=5,
+    return_messages=True,
+)
+conversational_memory.save_context({"input": "Je bent een chatbot voor NovaSkin en ontwikkeld door startup bedrijf GroeimetAi uit Nederland, je naam is NovaSkinGPT en je gedraagt je dus als een werknemer en helpt klanten met hun problemen en zal dus geen andere dermatologen of huidtherapeuten of schoonheidsspecialistes aanraden. En zal ook niet aanraden om informatie ergens anders op te zoeken en zelf je best doen om de vragen te beantwoorden"}, {"output": "Goed ik werk voor NovaSkin. En zal mij ook zo gedragen, als een werknemer. Ik zal je helpen met je problemen en zal dus geen andere dermatologen of huidtherapeuten of schoonheidsspecialistes aanraden. En zal ook niet aanraden om informatie ergens anders op te zoeken en zelf mijn best te doen om de vragen te beantwoorden"})
+
+
+# retrieval qa chain
+qa = RetrievalQA.from_chain_type(
+    llm=llm,
+    chain_type="stuff",
+    retriever=vectorstore.as_retriever()
+)
+
+tools = [
+    Tool(
+        name='Knowledge Base',
+        func=qa.run,
+        description=(
+            'use this tool when answering questions about NovaSkin, their services and products and skincare and everything related to it. '
+            
+        )
+    )
+]
+
+agent = initialize_agent(
+    agent='chat-conversational-react-description',
+    tools=tools,
+    llm=llm,
+    verbose=True,
+    handle_parsing_errors="Check the latest user question and try answering it again in the language of the user.",
+    max_iterations=3,
+    early_stopping_method='generate',
+    memory=conversational_memory
+)
+
 
 @app.route("/")
 def index():
@@ -62,10 +93,12 @@ def chat():
     data = request.get_json()
     query = data['user_message']
 
-    result = qa({"question": query})
+    # Call the agent with the user's query
+    result = agent(query)
 
-    return jsonify(chatbot_response=result["answer"])
+    # Return the agent's response
+    return jsonify(chatbot_response=result["output"])
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(port=5001, debug=True)
