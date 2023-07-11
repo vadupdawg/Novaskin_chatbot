@@ -63,12 +63,19 @@ qa = RetrievalQA.from_chain_type(
 
 tools = [
     Tool(
-        name='Knowledge Base',
-        func=qa.run,
-        description=(
-            'use this tool when answering questions about NovaSkin, their services and products and skincare and everything related to it. '
-            
-        )
+        name='Product Knowledge Base',
+        func=qa.run,  # Dit zou een RetrievalQA instantie zijn voor productgerelateerde vragen
+        description='use this tool when answering questions about NovaSkin products.'
+    ),
+    Tool(
+        name='Appointment Knowledge Base',
+        func=qa.run,  # Dit zou een RetrievalQA instantie zijn voor afspraakgerelateerde vragen
+        description='use this tool when answering questions about appointments at NovaSkin.'
+    ),
+    Tool(
+        name='General Knowledge Base',
+        func=qa.run,  # Dit zou een RetrievalQA instantie zijn voor algemene vragen
+        description='use this tool when answering general questions about NovaSkin.'
     )
 ]
 
@@ -82,6 +89,7 @@ agent = initialize_agent(
     early_stopping_method='generate',
     memory=conversational_memory
 )
+
 
 
 @app.route("/")
