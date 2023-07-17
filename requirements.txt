@@ -7,3 +7,4 @@ tiktoken
 nest_asyncio
 bs4
 pinecone-client
+Flask-Limiter
