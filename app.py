@@ -118,8 +118,6 @@ agent = initialize_agent(
     agent_kwargs={ "Welke taal moet ik aanhouden?" : "over het algemeen nederlands, behalve als anders wordt gecommuniceerd", "Wat als ik niet meer informatie heb?" : "Probeer dan door te vragen, en nooit geen andere professionals aan te raden."}
 )
 
-
-
 @app.route("/")
 def index():
     return render_template("index.html")
