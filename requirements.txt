@@ -6,5 +6,5 @@ chromadb
 tiktoken
 nest_asyncio
 bs4
-pinecone-client
+weaviate-client
 Flask-Limiter
