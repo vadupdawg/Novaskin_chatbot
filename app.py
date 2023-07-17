@@ -81,13 +81,18 @@ qa = RetrievalQA.from_chain_type(
 tools = [
     Tool(
         name='Product Kennis Bank',
-        func=qa.run,  # Dit zou een RetrievalQA instantie zijn voor productgerelateerde vragen
+        func=qa.run,  # Dit zou een RetrievalQA instantie zijn voor product gerelateerde vragen
         description='gebruik deze tool bij het beantwoorden van vragen over NovaSkin-producten.'
     ),
     Tool(
         name='Behandelingen Kennis Bank',
-        func=qa.run,  # Dit zou een RetrievalQA instantie zijn voor productgerelateerde vragen
+        func=qa.run,  # Dit zou een RetrievalQA instantie zijn voor behandeling gerelateerde vragen
         description='gebruik deze tool bij het beantwoorden van vragen over NovaSkin-behandelingen.'
+    ),
+    Tool(
+        name='Voeding Kennis Bank',
+        func=qa.run,  # Dit zou een RetrievalQA instantie zijn voor voeding gerelateerde vragen
+        description='gebruik deze tool bij het beantwoorden van vragen over voeding en diëtetiek.'
     ),
     Tool(
         name='Generiek Kennis Bank',
@@ -96,7 +101,7 @@ tools = [
     ),
     Tool(
         name='Prijzen Kennis Bank',
-        func=qa.run,  # Dit zou een RetrievalQA instantie zijn voor prijsgerelateerde vragen
+        func=qa.run,  # Dit zou een RetrievalQA instantie zijn voor prijs gerelateerde vragen
         description='gebruik deze tool bij het beantwoorden van vragen specifiek over de prijzen van NovaSkin'
     )
 ]
