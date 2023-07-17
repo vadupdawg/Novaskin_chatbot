@@ -50,7 +50,7 @@ embeddings = OpenAIEmbeddings(openai_api_key=openai_api_key)
 vectorstore = Weaviate(client, "NovaSkin", "text", embedding=embeddings)
 
 # chat completion llm
-llm = ChatOpenAI(
+llm = ChatOpenAI( 
     openai_api_key=openai_api_key,
     model_name="gpt-3.5-turbo-16k",
     temperature=0.0
@@ -63,10 +63,10 @@ conversational_memory = ConversationBufferWindowMemory(
     return_messages=True,
 )
 conversational_memory.save_context({
-                                        "input": "Je bent NovaSkinGPT, een chatbot ontwikkeld door het Nederlandse startup bedrijf GroeimetAi. Als een digitale medewerker van NovaSkin, help je klanten met hun problemen en stuur je ze naar onze behandelingen, te beginnen met de gratis consultatie. Je promoot geen andere dermatologen, huidtherapeuten, schoonheidsspecialisten of externe bronnen. Jouw doel is om zelf de vragen te beantwoorden en indien mogelijk, upselling van onze diensten te bevorderen. Let goed op de taal van de gebruiker en blijf de taal van de gebruiker spreken."
+                                        "input": "Je bent NovaSkinGPT, een chatbot ontwikkeld door het Nederlandse startup bedrijf GroeimetAi. Als een digitale medewerker van NovaSkin, help je klanten met hun problemen en stuur je ze naar onze behandelingen, te beginnen met de gratis consultatie. Je promoot geen andere dermatologen, huidtherapeuten, schoonheidsspecialisten of externe bronnen. Jouw doel is om de klant zo goed mogelijk te helpen en adviseren met vragen dat deze persoon heeft, het liefst door producten of behandelingen voor te schrijven. Let goed op de taal van de gebruiker en blijf de taal van de gebruiker spreken."
                                     }, 
                                     {
-                                        "output": "Ik ben NovaSkinGPT, ontwikkeld door GroeimetAi om je te helpen met al je vragen over NovaSkin. Ik zal je begeleiden naar onze behandelingen, te beginnen met de gratis consultatie. Ik promoot geen andere diensten of bronnen en streef ernaar om zelf al je vragen te beantwoorden. Mijn doel is om je de beste service te bieden en je te informeren over alle beschikbare opties bij NovaSkin. Ik zal goed op de taal van de gebruiker letten en deze spreken."
+                                        "output": "Ik ben NovaSkinGPT, ontwikkeld door GroeimetAi om je te helpen met al je vragen over NovaSkin. Ik zal je begeleiden naar onze behandelingen, te beginnen met de gratis consultatie. Ik promoot geen andere diensten of bronnen en streef ernaar om zelf al je vragen te beantwoorden. Mijn doel is om je de beste service te bieden en je te informeren over alle beschikbare opties bij NovaSkin. Ik zal mij zeker niet inhouden met het aanbevelen van producten en diensten, op basis van mijn kennis en informatie. Ik zal goed op de taal van de gebruiker letten en deze spreken."
                                         }
                                 )
 
@@ -80,19 +80,24 @@ qa = RetrievalQA.from_chain_type(
 
 tools = [
     Tool(
-        name='Product Knowledge Base',
+        name='Product Kennis Bank',
         func=qa.run,  # Dit zou een RetrievalQA instantie zijn voor productgerelateerde vragen
-        description='use this tool when answering questions about NovaSkin products.'
+        description='gebruik deze tool bij het beantwoorden van vragen over NovaSkin-producten.'
     ),
     Tool(
-        name='Appointment Knowledge Base',
-        func=qa.run,  # Dit zou een RetrievalQA instantie zijn voor afspraakgerelateerde vragen
-        description='use this tool when answering questions about appointments at NovaSkin.'
+        name='Behandelingen Kennis Bank',
+        func=qa.run,  # Dit zou een RetrievalQA instantie zijn voor productgerelateerde vragen
+        description='gebruik deze tool bij het beantwoorden van vragen over NovaSkin-behandelingen.'
     ),
     Tool(
-        name='General Knowledge Base',
+        name='Generiek Kennis Bank',
         func=qa.run,  # Dit zou een RetrievalQA instantie zijn voor algemene vragen
-        description='use this tool when answering general questions about NovaSkin.'
+        description='gebruik deze tool bij het beantwoorden van algemene vragen over NovaSkin.'
+    ),
+    Tool(
+        name='Prijzen Kennis Bank',
+        func=qa.run,  # Dit zou een RetrievalQA instantie zijn voor prijsgerelateerde vragen
+        description='gebruik deze tool bij het beantwoorden van vragen specifiek over de prijzen van NovaSkin'
     )
 ]
 
